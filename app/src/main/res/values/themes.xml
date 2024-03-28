@@ -1,0 +1,19 @@
+<resources xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.GameConnect" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:statusBarColor">@color/black</item>
+    </style>
+
+    <style name="Theme.GameConnect" parent="Base.Theme.GameConnect" />
+
+    <style name="SwitchColorTheme" parent="Base.Theme.GameConnect">
+        <item name="colorPrimary">@color/green</item>
+    </style>
+
+
+    <style name="BottomNavigationTheme" parent="Base.Theme.GameConnect">
+            <item name="itemTextColor">@color/blue</item>
+            <item name="itemIconTint">@color/blue</item>
+    </style>
+</resources>

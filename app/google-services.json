@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "739104729957",
+    "project_id": "gameconnect-f97bf",
+    "storage_bucket": "gameconnect-f97bf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:739104729957:android:2d4ed9c05573649b43cf8c",
+        "android_client_info": {
+          "package_name": "diplom.project.gameconnect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQBwI615IixPzTREuvM9CWq1mYficmp1U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
