@@ -29,15 +29,23 @@ class RequestAdapter(
     @SuppressLint("UseCompatLoadingForDrawables")
     override fun onBindViewHolder(holder: RequestVH, position: Int) {
         val item = holder.binding
-        item.gender.text = context.resources.getString(R.string.gender) + if (list[position].gender) "Ж" else "М"
+        item.gender.text = context.resources.getString(R.string.gender) + " " + if (list[position].gender) "Ж" else "М"
         item.gameName.text = list[position].gameName
-        item.needUsers.text = context.resources.getString(R.string.need_users) + list[position].needUsers
+        item.needUsers.text = context.resources.getString(R.string.need_users) + " " + list[position].needUsers
         item.userNick.text = list[position].userNick
         if (list[position].comment.isEmpty()) item.comment.visibility = View.GONE
-        else item.comment.text = list[position].comment
-        item.root.background = when(list[position].userRating){
-            0-40 ->  context.resources.getDrawable(R.drawable.round_border_form_red, context.theme)
-            75-100 ->  context.resources.getDrawable(R.drawable.round_border_form_green, context.theme)
+        else item.comment.text = context.resources.getString(R.string.comment) + " " + list[position].comment
+
+//        if (list[position].userRating.toInt() <= 40) item.root.background =
+//            context.resources.getDrawable(R.drawable.round_border_form_red, context.theme)
+//        else if (list[position].userRating.toInt() < 75) item.root.background =
+//            context.resources.getDrawable(R.drawable.round_border_form_green, context.theme)
+//        else item.root.background =
+//            context.resources.getDrawable(R.drawable.round_border_form, context.theme)
+
+        item.root.background = when(list[position].userRating.toInt()){
+            in 0..40 ->  context.resources.getDrawable(R.drawable.round_border_form_red, context.theme)
+            in 75..100 ->  context.resources.getDrawable(R.drawable.round_border_form_green, context.theme)
             else -> context.resources.getDrawable(R.drawable.round_border_form, context.theme)
         }
     }

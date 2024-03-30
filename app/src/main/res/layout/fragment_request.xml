@@ -21,6 +21,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
+        android:id="@+id/imageView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/game_sign"
@@ -36,8 +37,42 @@
         android:fadingEdgeLength="48dp"
         android:requiresFadingEdge="vertical"
         app:layout_constraintBottom_toTopOf="@id/gl3"
-        app:layout_constraintTop_toBottomOf="@+id/titleTextView"
+        app:layout_constraintTop_toBottomOf="@+id/sortTxt"
         tools:listitem="@layout/request_element" />
+
+    <TextView
+        android:id="@+id/sortTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Сортировка: Cначала Новые"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:layout_marginTop="8dp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/titleTextView"
+        app:layout_constraintTop_toBottomOf="@+id/titleTextView" />
+
+    <TextView
+        android:id="@+id/filterTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/filters"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/imageView3"
+        app:layout_constraintTop_toBottomOf="@+id/titleTextView" />
+
+    <ProgressBar
+        android:id="@+id/progressWaitRequest"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:theme="@style/progressBarStyle"
+        app:layout_constraintBottom_toTopOf="@+id/guideline4"
+        app:layout_constraintEnd_toEndOf="@+id/rvRequests"
+        app:layout_constraintStart_toStartOf="@+id/rvRequests"
+        app:layout_constraintTop_toBottomOf="@+id/titleTextView" />
 
     <TextView
         android:id="@+id/mainButton"
@@ -80,5 +115,12 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.85" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
