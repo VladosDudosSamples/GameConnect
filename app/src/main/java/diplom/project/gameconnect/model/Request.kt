@@ -8,5 +8,6 @@ data class Request(
     var comment: String,
     var userRating: String,
     var telegramId: String,
-    var date: String
+    var date: String,
+    var platformList: List<String>
 )

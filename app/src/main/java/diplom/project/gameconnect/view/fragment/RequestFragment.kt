@@ -15,14 +15,19 @@ import android.view.ViewGroup
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.FirebaseFirestore
 import diplom.project.gameconnect.R
 import diplom.project.gameconnect.app.App
 import diplom.project.gameconnect.databinding.DialogRequestBinding
 import diplom.project.gameconnect.databinding.FragmentRequestBinding
+import diplom.project.gameconnect.model.Platform
 import diplom.project.gameconnect.model.Request
 import diplom.project.gameconnect.model.SortType
+import diplom.project.gameconnect.statik.SelectedPlatforms.listPlatforms
+import diplom.project.gameconnect.statik.SelectedPlatforms.selectedPlatform
+import diplom.project.gameconnect.view.adapter.PlatformsAdapter
 import diplom.project.gameconnect.view.adapter.RequestAdapter
 import diplom.project.gameconnect.viewmodel.RequestListViewModel
 import java.time.LocalDateTime
@@ -63,11 +68,24 @@ class RequestFragment : Fragment() {
         binding.sortTxt.setOnClickListener {
             showSortMenu()
         }
+        binding.filterTxt.setOnClickListener {
+            showFilterMenu()
+        }
+    }
+
+    private fun setLayoutManager() {
+        binding.rvRequests.layoutManager =
+            LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+    }
+
+    private fun setAdapter(list: List<Request>) {
+        sortListBySortType()
+        binding.rvRequests.adapter =
+            RequestAdapter(list, requireContext())
     }
 
     private fun setAdapter() {
-        binding.rvRequests.layoutManager =
-            LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+        setLayoutManager()
         sortListBySortType()
         binding.rvRequests.adapter =
             RequestAdapter(requestListViewModel.requestList.value!!, requireContext())
@@ -88,7 +106,8 @@ class RequestFragment : Fragment() {
                                 comment,
                                 task.result.get("rating").toString(),
                                 task.result.get("telegramId").toString(),
-                                LocalDateTime.now().format(format)
+                                LocalDateTime.now().format(format),
+                                selectedPlatform
                             )
                         )
                 }
@@ -105,17 +124,32 @@ class RequestFragment : Fragment() {
         val dialog = Dialog(requireContext()).apply {
             setCancelable(true)
             setContentView(dialogBinding.root)
+            var count = dialogBinding.needUsersTxt.text.toString().toInt()
+            dialogBinding.rvPlatformsDialog.layoutManager = LinearLayoutManager(requireContext())
+            dialogBinding.rvPlatformsDialog.adapter = PlatformsAdapter(listPlatforms, requireContext())
             dialogBinding.okBtn.setOnClickListener {
                 if (checkInputDialog(dialogBinding)) {
                     createRequest(
-                        dialogBinding.needUsersTxt.text.toString(),
+                        count.toString(),
                         dialogBinding.gameNameTxt.text.toString(),
                         dialogBinding.comment.text.toString()
                     )
-                    requestListViewModel.changeCountRequests(store, 1)
 
+                    requestListViewModel.changeCountRequests(store, 1)
                     this.cancel()
                     requestListViewModel.getRequestList(store)
+                }
+            }
+            dialogBinding.imgReduce.setOnClickListener {
+                if (count > 1) {
+                    count--
+                    dialogBinding.needUsersTxt.text = count.toString()
+                }
+            }
+            dialogBinding.imgIncrease.setOnClickListener {
+                if (count < 5) {
+                    count++
+                    dialogBinding.needUsersTxt.text = count.toString()
                 }
             }
             window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -124,18 +158,9 @@ class RequestFragment : Fragment() {
     }
 
     private fun checkInputDialog(b: DialogRequestBinding): Boolean {
-        var needUsers = 0
-        try {
-            needUsers = b.needUsersTxt.text.toString()
-                .toInt()
-        } catch (e: Exception) {
-            Log.d("tag", "msg")
-        }
         when {
             b.gameNameTxt.text.toString().length < 2 -> makeToast(getString(R.string.game_name_too_short))
-            needUsers > 5 -> makeToast(getString(R.string.to_many_teammates))
-            needUsers < 1 -> makeToast(getString(R.string.need_users_at_least_1_teammate))
-
+            selectedPlatform.size == 0 -> makeToast(getString(R.string.empty_list_platforms))
             else -> return true
         }
         return false
@@ -175,11 +200,23 @@ class RequestFragment : Fragment() {
                 resources.getString(R.string.old_at_start) -> SortType.OLD_DATE
                 resources.getString(R.string.alphabet_sort) -> SortType.ALPHABET
                 resources.getString(R.string.alphabet_distinct_sort) -> SortType.ANTI_ALPHABET
-                else -> SortType.RAITING
+                else -> SortType.RATING
             }
             setAdapter()
             binding.sortTxt.text =
                 "${resources.getString(R.string.sorted_by)} ${it.title.toString()}"
+            true
+        }
+        popup.show()
+    }
+
+    private fun showFilterMenu() {
+        val wrapper: Context = ContextThemeWrapper(requireContext(), R.style.popupMenuStyle)
+        val popup = PopupMenu(wrapper, binding.filterTxt)
+
+        popup.inflate(R.menu.filter_menu)
+        popup.setOnMenuItemClickListener {
+            setAdapter(requestListViewModel.filterList(it, requireContext()))
             true
         }
         popup.show()

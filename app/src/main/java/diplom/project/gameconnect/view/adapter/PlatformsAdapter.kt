@@ -12,7 +12,7 @@ import diplom.project.gameconnect.model.Platform
 import diplom.project.gameconnect.statik.SelectedPlatforms.selectedPlatform
 
 class PlatformsAdapter(
-    private var list: List<Platform>,
+    private var list: List<String>,
     private val context: Context
 ) :
     RecyclerView.Adapter<PlatformsAdapter.PlatformVH>() {
@@ -28,7 +28,7 @@ class PlatformsAdapter(
 
     override fun onBindViewHolder(holder: PlatformVH, position: Int) {
         val item = holder.binding.root
-        item.text = list[position].name
+        item.text = list[position]
         item.setOnClickListener {
             if (!selectedPlatform.contains(list[position])) {
                 item.setTextColor(context.resources.getColor(R.color.green, context.theme))

@@ -5,5 +5,5 @@ enum class SortType {
     OLD_DATE,
     ALPHABET,
     ANTI_ALPHABET,
-    RAITING
+    RATING
 }

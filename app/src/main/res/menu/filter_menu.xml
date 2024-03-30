@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/pc"
+        android:title="@string/pc"/>
+    <item android:id="@+id/playstation"
+        android:title="@string/playstation"/>
+    <item android:id="@+id/xbox"
+        android:title="@string/xbox"/>
+    <item android:id="@+id/mobile"
+        android:title="@string/mobile"/>
+    <item android:id="@+id/ns"
+        android:title="@string/nintendoswitch"/>
+    <item android:id="@+id/males"
+        android:title="@string/man"/>
+    <item android:id="@+id/females"
+        android:title="@string/women"/>
+    <item android:id="@+id/deleteFilters"
+        android:title="@string/deleteFilters"/>
+</menu>

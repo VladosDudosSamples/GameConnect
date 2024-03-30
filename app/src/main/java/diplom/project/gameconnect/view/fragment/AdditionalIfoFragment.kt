@@ -15,6 +15,8 @@ import diplom.project.gameconnect.app.App
 import diplom.project.gameconnect.databinding.FragmentAdditionalBinding
 import diplom.project.gameconnect.model.Platform
 import diplom.project.gameconnect.model.UserInfo
+import diplom.project.gameconnect.statik.SelectedPlatforms
+import diplom.project.gameconnect.statik.SelectedPlatforms.listPlatforms
 import diplom.project.gameconnect.statik.SelectedPlatforms.selectedPlatform
 import diplom.project.gameconnect.view.activity.MainActivity
 import diplom.project.gameconnect.view.adapter.PlatformsAdapter
@@ -57,7 +59,9 @@ class AdditionalIfoFragment : Fragment() {
     private fun checkInput(): Boolean {
         when {
             binding.nickEdit.text.length <= 5 -> makeToast(getString(R.string.short_nick))
-            binding.telegramId.text.toString().isEmpty() -> makeToast(getString(R.string.no_telegram_id))
+            binding.telegramId.text.toString()
+                .isEmpty() -> makeToast(getString(R.string.no_telegram_id))
+
             selectedPlatform.isEmpty() -> makeToast(getString(R.string.empty_list_platforms))
             else -> return true
         }
@@ -67,28 +71,33 @@ class AdditionalIfoFragment : Fragment() {
     private fun makeToast(m: String) {
         Toast.makeText(activity, m, Toast.LENGTH_SHORT).show()
     }
-    private fun setUserInfo(){
-        val newInfo: UserInfo = UserInfo(binding.nickEdit.text.toString(), listToString(selectedPlatform), binding.telegramId.text.toString(), binding.switchGender.isChecked, 50)
+
+    private fun setUserInfo() {
+        val newInfo: UserInfo = UserInfo(
+            binding.nickEdit.text.toString(),
+            selectedPlatform,
+            binding.telegramId.text.toString(),
+            binding.switchGender.isChecked,
+            50
+        )
 
         store.collection("Users").document("user:${App.dm.getUserKey()}")
             .set(newInfo)
             .addOnCompleteListener { d ->
                 if (d.isSuccessful) {
                     startActivity(Intent(requireActivity(), MainActivity::class.java))
+                    selectedPlatform.clear()
                     App.dm.passAdditionalEnter()
                 } else makeToast(d.exception!!.message.toString())
             }
 
     }
-    private fun listToString(list: List<Platform>) : String {
-        var result = ""
-        for (i in list){
-            result += "${i.name} "
-        }
-        return result.trim()
-    }
-    private fun setAdapter(){
-        binding.rvPlatforms.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        binding.rvPlatforms.adapter = PlatformsAdapter(listOf(Platform("PC(ПК)"), Platform("XBOX"), Platform("PlayStation"), Platform("Nintendo Switch"), Platform("Mobile")), requireContext())
+
+    private fun setAdapter() {
+        binding.rvPlatforms.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.rvPlatforms.adapter = PlatformsAdapter(
+            listPlatforms, requireContext()
+        )
     }
 }

@@ -8,6 +8,6 @@
         android:title="@string/alphabet_sort"/>
     <item android:id="@+id/alphabet_distinct"
         android:title="@string/alphabet_distinct_sort"/>
-    <item android:id="@+id/raiting_sort"
+    <item android:id="@+id/rating_sort"
         android:title="@string/raiting_sort"/>
 </menu>
