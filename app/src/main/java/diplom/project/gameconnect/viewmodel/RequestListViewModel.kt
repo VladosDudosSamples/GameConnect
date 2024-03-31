@@ -17,7 +17,6 @@ class RequestListViewModel : ViewModel() {
     var isFunDone = MutableLiveData<Boolean>()
     private var resultList = mutableListOf<Request>()
     private var requestsCount = 0
-    private var deleteNum = 0
     private var currentFilter: FilterType = FilterType.NO_FILTERS
 
     fun getRequestList(store: FirebaseFirestore) {
@@ -27,13 +26,12 @@ class RequestListViewModel : ViewModel() {
                 if (it.isSuccessful) {
                     requestsCount = it.result.get("count").toString().toInt()
                     if (requestsCount == 0) return@addOnCompleteListener
-                    deleteNum = it.result.get("lastDelete").toString().toInt()
                     getRequestsWithCount(store)
                 }
             }
     }
 
-    fun getCountAndDelete(): Pair<Int, Int> = Pair(requestsCount, deleteNum)
+    fun getCount(): Int = requestsCount
 
     private fun getRequestsWithCount(store: FirebaseFirestore) {
         for (i in 1..requestsCount) {
@@ -49,7 +47,7 @@ class RequestListViewModel : ViewModel() {
         isFunDone.value = false
     }
 
-    private fun documentToRequest(doc: DocumentSnapshot): Request = Request(
+    fun documentToRequest(doc: DocumentSnapshot): Request = Request(
         doc.data?.get("id").toString().toInt(),
         doc.data?.get("userNick").toString(),
         doc.data?.get("needUsers").toString(),

@@ -15,6 +15,7 @@ import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import diplom.project.gameconnect.R
 import diplom.project.gameconnect.databinding.DialogChangeNeedUsersBinding
@@ -39,8 +40,6 @@ class RequestFragment : Fragment(), RequestAdapter.OnClickListener {
         } else {
             makeToast("Не совпало")
         }
-
-        //ДОБАВИТЬ УДАЛЕНИЕ
         //СДЕЛАТЬ ВЫВОД telegramId 
     }
 
@@ -101,7 +100,7 @@ class RequestFragment : Fragment(), RequestAdapter.OnClickListener {
     }
 
     private fun createRequest(needUsers: String, gameName: String, comment: String) {
-        var id = requestListViewModel.getCountAndDelete().first + 1
+        val id = requestListViewModel.getCount() + 1
         store.collection("Requests")
             .document("Request${id}")
             .set(
@@ -236,6 +235,8 @@ class RequestFragment : Fragment(), RequestAdapter.OnClickListener {
             )
         }
         val dialog = Dialog(requireContext()).apply {
+            val deleteString = store.collection("Requests")
+                .document("RequestCount")
             setCancelable(true)
             setContentView(dialogBinding.root)
             var newCount = count
@@ -246,6 +247,20 @@ class RequestFragment : Fragment(), RequestAdapter.OnClickListener {
                     .update("needUsers", newCount.toString())
                 this.cancel()
                 requestListViewModel.getRequestList(store)
+            }
+            dialogBinding.deleteBtn.setOnClickListener {
+                deleteString.get()
+                    .addOnCompleteListener {
+                        val requestsCount = it.result.data?.get("count").toString().toInt()
+                        if (it.isSuccessful && requestsCount != requestNum) {
+                            deleteString.update("count", requestsCount - 1)
+                            deleteRequest(requestNum, requestsCount)
+                        } else if (requestsCount == requestNum) {
+                            deleteString.update("count", requestsCount - 1)
+                            deleteRequest(requestNum)
+                        }
+                    }
+                this.cancel()
             }
             dialogBinding.imgReduce.setOnClickListener {
                 if (newCount > 1) {
@@ -262,5 +277,25 @@ class RequestFragment : Fragment(), RequestAdapter.OnClickListener {
             window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         }
         dialog.show()
+    }
+
+    private fun deleteRequest(requestNum: Int, listSize: Int) {
+        store.collection("Requests")
+            .document("Request${listSize}").get()
+            .addOnCompleteListener {
+                store.collection("Requests")
+                    .document("Request${requestNum}").set(
+                        requestListViewModel.documentToRequest(it.result)
+                    )
+                store.collection("Requests")
+                    .document("Request${listSize}").delete()
+                requestListViewModel.getRequestList(store)
+            }
+    }
+
+    private fun deleteRequest(requestNum: Int) {
+        store.collection("Requests")
+            .document("Request${requestNum}").delete()
+        requestListViewModel.getRequestList(store)
     }
 }
