@@ -12,7 +12,8 @@ import diplom.project.gameconnect.model.Request
 
 class RequestAdapter(
     private var list: List<Request>,
-    private val context: Context
+    private val context: Context,
+    private val onClickListener: OnClickListener
 ) :
     RecyclerView.Adapter<RequestAdapter.RequestVH>() {
 
@@ -36,21 +37,21 @@ class RequestAdapter(
         if (list[position].comment.isEmpty()) item.comment.visibility = View.GONE
         else item.comment.text = context.resources.getString(R.string.comment) + " " + list[position].comment
 
-//        if (list[position].userRating.toInt() <= 40) item.root.background =
-//            context.resources.getDrawable(R.drawable.round_border_form_red, context.theme)
-//        else if (list[position].userRating.toInt() < 75) item.root.background =
-//            context.resources.getDrawable(R.drawable.round_border_form_green, context.theme)
-//        else item.root.background =
-//            context.resources.getDrawable(R.drawable.round_border_form, context.theme)
-
         item.root.background = when(list[position].userRating.toInt()){
             in 0..40 ->  context.resources.getDrawable(R.drawable.round_border_form_red, context.theme)
             in 75..100 ->  context.resources.getDrawable(R.drawable.round_border_form_green, context.theme)
             else -> context.resources.getDrawable(R.drawable.round_border_form, context.theme)
         }
+
+        item.root.setOnClickListener {
+            onClickListener.onClick(list[position])
+        }
     }
 
     override fun getItemCount(): Int = list.size
+    interface OnClickListener{
+        fun onClick(data: Request)
+    }
     class RequestVH(val binding: RequestElementBinding) :
         RecyclerView.ViewHolder(binding.root)
 }

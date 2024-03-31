@@ -23,6 +23,7 @@
     <string name="you_have_been_successfully_authorised">Успешно</string>
     <string name="enter_the_password">Введите пароль</string>
     <string name="user_key">user_key</string>
+    <string name="user_name">user_name</string>
     <string name="isAdditionalInfoEntered">isAdditionalInfoEntered</string>
     <string name="password_mismatch">Пароли не совпадают</string>
     <string name="password_must_be_6_symbols_at_least">Пароль должен содержать не менее 6 символов</string>

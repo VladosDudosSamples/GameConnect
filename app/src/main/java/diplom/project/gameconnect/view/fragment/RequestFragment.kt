@@ -6,7 +6,6 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.ContextThemeWrapper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -15,25 +14,35 @@ import android.view.ViewGroup
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.FirebaseFirestore
 import diplom.project.gameconnect.R
-import diplom.project.gameconnect.app.App
+import diplom.project.gameconnect.databinding.DialogChangeNeedUsersBinding
 import diplom.project.gameconnect.databinding.DialogRequestBinding
 import diplom.project.gameconnect.databinding.FragmentRequestBinding
-import diplom.project.gameconnect.model.Platform
 import diplom.project.gameconnect.model.Request
 import diplom.project.gameconnect.model.SortType
 import diplom.project.gameconnect.statik.SelectedPlatforms.listPlatforms
 import diplom.project.gameconnect.statik.SelectedPlatforms.selectedPlatform
+import diplom.project.gameconnect.statik.User.userData
 import diplom.project.gameconnect.view.adapter.PlatformsAdapter
 import diplom.project.gameconnect.view.adapter.RequestAdapter
 import diplom.project.gameconnect.viewmodel.RequestListViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class RequestFragment : Fragment() {
+class RequestFragment : Fragment(), RequestAdapter.OnClickListener {
+
+    override fun onClick(data: Request) {
+        if (userData.nick == data.userNick) {
+            showChangeCountDialog(data.id, data.needUsers.toInt())
+        } else {
+            makeToast("Не совпало")
+        }
+
+        //ДОБАВИТЬ УДАЛЕНИЕ
+        //СДЕЛАТЬ ВЫВОД telegramId 
+    }
 
     private val binding: FragmentRequestBinding by lazy {
         FragmentRequestBinding.inflate(
@@ -81,37 +90,34 @@ class RequestFragment : Fragment() {
     private fun setAdapter(list: List<Request>) {
         sortListBySortType()
         binding.rvRequests.adapter =
-            RequestAdapter(list, requireContext())
+            RequestAdapter(list, requireContext(), this)
     }
 
     private fun setAdapter() {
         setLayoutManager()
         sortListBySortType()
         binding.rvRequests.adapter =
-            RequestAdapter(requestListViewModel.requestList.value!!, requireContext())
+            RequestAdapter(requestListViewModel.requestList.value!!, requireContext(), this)
     }
 
     private fun createRequest(needUsers: String, gameName: String, comment: String) {
-        store.collection("Users").document("user:${App.dm.getUserKey()}").get()
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    store.collection("Requests")
-                        .document("Request${requestListViewModel.getCountAndDelete().first + 1}")
-                        .set(
-                            Request(
-                                task.result.get("nick").toString(),
-                                needUsers,
-                                task.result.get("gender").toString().toBoolean(),
-                                gameName,
-                                comment,
-                                task.result.get("rating").toString(),
-                                task.result.get("telegramId").toString(),
-                                LocalDateTime.now().format(format),
-                                selectedPlatform
-                            )
-                        )
-                }
-            }
+        var id = requestListViewModel.getCountAndDelete().first + 1
+        store.collection("Requests")
+            .document("Request${id}")
+            .set(
+                Request(
+                    id,
+                    userData.nick,
+                    needUsers,
+                    userData.gender,
+                    gameName,
+                    comment,
+                    userData.rating.toString(),
+                    userData.telegramId,
+                    LocalDateTime.now().format(format),
+                    selectedPlatform
+                )
+            )
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -126,7 +132,8 @@ class RequestFragment : Fragment() {
             setContentView(dialogBinding.root)
             var count = dialogBinding.needUsersTxt.text.toString().toInt()
             dialogBinding.rvPlatformsDialog.layoutManager = LinearLayoutManager(requireContext())
-            dialogBinding.rvPlatformsDialog.adapter = PlatformsAdapter(listPlatforms, requireContext())
+            dialogBinding.rvPlatformsDialog.adapter =
+                PlatformsAdapter(listPlatforms, requireContext())
             dialogBinding.okBtn.setOnClickListener {
                 if (checkInputDialog(dialogBinding)) {
                     createRequest(
@@ -220,5 +227,40 @@ class RequestFragment : Fragment() {
             true
         }
         popup.show()
+    }
+
+    private fun showChangeCountDialog(requestNum: Int, count: Int) {
+        val dialogBinding: DialogChangeNeedUsersBinding by lazy {
+            DialogChangeNeedUsersBinding.inflate(
+                layoutInflater
+            )
+        }
+        val dialog = Dialog(requireContext()).apply {
+            setCancelable(true)
+            setContentView(dialogBinding.root)
+            var newCount = count
+            dialogBinding.needUsersTxt.text = count.toString()
+            dialogBinding.okBtn.setOnClickListener {
+                store.collection("Requests")
+                    .document("Request${requestNum}")
+                    .update("needUsers", newCount.toString())
+                this.cancel()
+                requestListViewModel.getRequestList(store)
+            }
+            dialogBinding.imgReduce.setOnClickListener {
+                if (newCount > 1) {
+                    newCount--
+                    dialogBinding.needUsersTxt.text = newCount.toString()
+                }
+            }
+            dialogBinding.imgIncrease.setOnClickListener {
+                if (newCount < 5) {
+                    newCount++
+                    dialogBinding.needUsersTxt.text = newCount.toString()
+                }
+            }
+            window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        }
+        dialog.show()
     }
 }

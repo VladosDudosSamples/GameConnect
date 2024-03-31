@@ -1,6 +1,7 @@
 package diplom.project.gameconnect.model
 
 data class Request(
+    var id: Int,
     var userNick: String,
     var needUsers: String,
     var gender: Boolean,

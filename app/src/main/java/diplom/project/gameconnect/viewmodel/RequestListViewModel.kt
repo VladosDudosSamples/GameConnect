@@ -50,6 +50,7 @@ class RequestListViewModel : ViewModel() {
     }
 
     private fun documentToRequest(doc: DocumentSnapshot): Request = Request(
+        doc.data?.get("id").toString().toInt(),
         doc.data?.get("userNick").toString(),
         doc.data?.get("needUsers").toString(),
         doc.data?.get("gender").toString().toBoolean(),
