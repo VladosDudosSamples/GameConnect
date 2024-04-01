@@ -70,4 +70,6 @@
     <string name="nintendoswitch">NintendoSwitch</string>
     <string name="deleteFilters">Без фильтров</string>
     <string name="delete">Удалить</string>
+    <string name="lets_join">Присоединяйтесь!</string>
+    <string name="open_profile">Открыть профиль</string>
 </resources>

@@ -1,24 +1,31 @@
 package diplom.project.gameconnect.view.fragment
 
+import android.R.attr.label
+import android.R.attr.text
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
+import android.content.Context.CLIPBOARD_SERVICE
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.ContextThemeWrapper
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import diplom.project.gameconnect.R
 import diplom.project.gameconnect.databinding.DialogChangeNeedUsersBinding
+import diplom.project.gameconnect.databinding.DialogGiveInfoBinding
 import diplom.project.gameconnect.databinding.DialogRequestBinding
 import diplom.project.gameconnect.databinding.FragmentRequestBinding
 import diplom.project.gameconnect.model.Request
@@ -32,15 +39,15 @@ import diplom.project.gameconnect.viewmodel.RequestListViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+
 class RequestFragment : Fragment(), RequestAdapter.OnClickListener {
 
     override fun onClick(data: Request) {
         if (userData.nick == data.userNick) {
             showChangeCountDialog(data.id, data.needUsers.toInt())
         } else {
-            makeToast("Не совпало")
+            openTgIdDialog(data.telegramId)
         }
-        //СДЕЛАТЬ ВЫВОД telegramId 
     }
 
     private val binding: FragmentRequestBinding by lazy {
@@ -297,5 +304,32 @@ class RequestFragment : Fragment(), RequestAdapter.OnClickListener {
         store.collection("Requests")
             .document("Request${requestNum}").delete()
         requestListViewModel.getRequestList(store)
+    }
+
+    private fun openTgIdDialog(tgId: String) {
+        val dialogBinding: DialogGiveInfoBinding by lazy {
+            DialogGiveInfoBinding.inflate(
+                layoutInflater
+            )
+        }
+        val dialog = Dialog(requireContext()).apply {
+            setCancelable(true)
+            setContentView(dialogBinding.root)
+            dialogBinding.tgId.text = "@$tgId"
+            dialogBinding.tgId.setOnClickListener {
+                val clipboard: ClipboardManager =
+                    requireContext().getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                val clip = ClipData.newPlainText("telegramId", "@$tgId")
+                clipboard.setPrimaryClip(clip)
+                makeToast("telegram id скопирован в буфер обмена")
+                this.cancel()
+            }
+            dialogBinding.openProfileBtn.setOnClickListener {
+                findNavController().navigate(R.id.action_requestFragment_to_profileFragment)
+                this.cancel()
+            }
+            window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        }
+        dialog.show()
     }
 }
