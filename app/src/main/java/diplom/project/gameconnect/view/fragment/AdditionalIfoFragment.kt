@@ -78,7 +78,9 @@ class AdditionalIfoFragment : Fragment() {
             selectedPlatform,
             binding.telegramId.text.toString(),
             binding.switchGender.isChecked,
-            50
+            50,
+            "https://",
+            listOf()
         )
 
         store.collection("Users").document("user:${App.dm.getUserKey()}")
@@ -87,7 +89,6 @@ class AdditionalIfoFragment : Fragment() {
                 if (d.isSuccessful) {
                     startActivity(Intent(requireActivity(), MainActivity::class.java))
                     selectedPlatform.clear()
-                    App.dm.passAdditionalEnter()
                 } else makeToast(d.exception!!.message.toString())
             }
 

@@ -88,7 +88,7 @@ class AuthRegisterFragment() : Fragment() {
                         val user = auth.currentUser
                         updateUI(user)
                         App.dm.setUserKey(user!!.uid)
-                        if (App.dm.isAdditionalInfoEntered())
+                        if (App.dm.isAdditionalInfoEntered(user.uid))
                             startActivity(Intent(requireActivity(), MainActivity::class.java))
                         else findNavController().navigate(R.id.action_authRegisterFragment_to_additionalIfoFragment)
                     } else {

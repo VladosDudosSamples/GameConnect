@@ -1,7 +1,5 @@
 package diplom.project.gameconnect.view.fragment
 
-import android.R.attr.label
-import android.R.attr.text
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.ClipData
@@ -17,21 +15,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import android.widget.Toast
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.FirebaseFirestore
 import diplom.project.gameconnect.R
+import diplom.project.gameconnect.app.App
 import diplom.project.gameconnect.databinding.DialogChangeNeedUsersBinding
 import diplom.project.gameconnect.databinding.DialogGiveInfoBinding
 import diplom.project.gameconnect.databinding.DialogRequestBinding
 import diplom.project.gameconnect.databinding.FragmentRequestBinding
 import diplom.project.gameconnect.model.Request
 import diplom.project.gameconnect.model.SortType
+import diplom.project.gameconnect.model.UserInfo
 import diplom.project.gameconnect.statik.SelectedPlatforms.listPlatforms
 import diplom.project.gameconnect.statik.SelectedPlatforms.selectedPlatform
+import diplom.project.gameconnect.statik.User
 import diplom.project.gameconnect.statik.User.userData
 import diplom.project.gameconnect.view.adapter.PlatformsAdapter
 import diplom.project.gameconnect.view.adapter.RequestAdapter
@@ -46,6 +46,7 @@ class RequestFragment : Fragment(), RequestAdapter.OnClickListener {
         if (userData.nick == data.userNick) {
             showChangeCountDialog(data.id, data.needUsers.toInt())
         } else {
+            addUserToList(data)
             openTgIdDialog(data.telegramId)
         }
     }
@@ -121,7 +122,9 @@ class RequestFragment : Fragment(), RequestAdapter.OnClickListener {
                     userData.rating.toString(),
                     userData.telegramId,
                     LocalDateTime.now().format(format),
-                    selectedPlatform
+                    selectedPlatform,
+                    "https://",
+                    App.dm.getUserKey()
                 )
             )
     }
@@ -324,12 +327,16 @@ class RequestFragment : Fragment(), RequestAdapter.OnClickListener {
                 makeToast("telegram id скопирован в буфер обмена")
                 this.cancel()
             }
-            dialogBinding.openProfileBtn.setOnClickListener {
-                findNavController().navigate(R.id.action_requestFragment_to_profileFragment)
-                this.cancel()
-            }
             window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         }
         dialog.show()
+    }
+    private fun addUserToList(request: Request){
+        val list = App.dm.getListLastTeammates()
+        list.removeAll {
+            it.telegramId == request.telegramId
+        }
+        list.add(request)
+        App.dm.setListTeammates(list)
     }
 }

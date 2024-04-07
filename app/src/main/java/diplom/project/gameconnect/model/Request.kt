@@ -10,5 +10,7 @@ data class Request(
     var userRating: String,
     var telegramId: String,
     var date: String,
-    var platformList: List<String>
+    var platformList: List<String>,
+    var profileImage: String,
+    var userId: String
 )

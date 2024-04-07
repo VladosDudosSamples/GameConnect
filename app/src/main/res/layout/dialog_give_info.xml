@@ -31,18 +31,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/joinTxt" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/openProfileBtn"
-        android:layout_width="0dp"
-        android:layout_height="fill_parent"
-        android:layout_marginTop="8dp"
-        android:backgroundTint="@color/white"
-        android:text="@string/open_profile"
-        android:textColor="@color/black"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tgId" />
 </androidx.constraintlayout.widget.ConstraintLayout>

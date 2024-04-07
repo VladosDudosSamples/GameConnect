@@ -57,7 +57,9 @@ class RequestListViewModel : ViewModel() {
         doc.data?.get("userRating").toString(),
         doc.data?.get("telegramId").toString(),
         doc.data?.get("date").toString(),
-        doc.data?.get("platformList").toString().replace("[", "").replace("]", "").replace(",", "").split(" ")
+        doc.data?.get("platformList").toString().replace("[", "").replace("]", "").replace(",", "").split(" "),
+        doc.data?.get("profileImage").toString(),
+        doc.data?.get("userId").toString()
     )
 
     fun changeCountRequests(store: FirebaseFirestore, changeNum: Int) {

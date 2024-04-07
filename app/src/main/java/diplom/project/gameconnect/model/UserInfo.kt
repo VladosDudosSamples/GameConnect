@@ -5,5 +5,7 @@ data class UserInfo(
     var listPlatform: List<String>,
     var telegramId: String,
     var gender: Boolean,
-    var rating: Int
+    var rating: Int,
+    var profileImage: String,
+    var gamesList: List<String>
 )

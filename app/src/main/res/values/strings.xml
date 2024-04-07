@@ -72,4 +72,12 @@
     <string name="delete">Удалить</string>
     <string name="lets_join">Присоединяйтесь!</string>
     <string name="open_profile">Открыть профиль</string>
+    <string name="listlistteammates">listListTeammates</string>
+    <string name="poradok">Порядочность:</string>
+    <string name="games">Игры:</string>
+    <string name="increase_rating">Порядочность пользователя повышена</string>
+    <string name="decrease_rating">Порядочность пользователя понижена</string>
+    <string name="userpick">userPick</string>
+    <string name="make_app_use_camera">Разрешите приложению использовать камеру</string>
+    <string name="make_app_use_gallery">Разрешите приложению использовать галлерею</string>
 </resources>

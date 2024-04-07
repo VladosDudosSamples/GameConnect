@@ -65,4 +65,7 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.6.2")
     implementation(platform("com.google.firebase:firebase-bom:32.6.0"))
 
+    implementation ("com.google.code.gson:gson:2.10.1")
+
+
 }

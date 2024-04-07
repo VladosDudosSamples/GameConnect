@@ -37,7 +37,7 @@ class SplashFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         lifecycleScope.launch {
-            delay(1500)
+            delay(1100)
 
             if (!App.dm.isOnBoardingPassed()) {
                 findNavController().navigate(R.id.action_splashFragment_to_onBoardingFragment2)
