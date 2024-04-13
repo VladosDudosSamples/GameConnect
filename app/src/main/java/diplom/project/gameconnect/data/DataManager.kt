@@ -3,11 +3,9 @@ package diplom.project.gameconnect.data
 import android.content.Context
 import com.google.common.reflect.TypeToken
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.auth.User
 import com.google.gson.Gson
 import diplom.project.gameconnect.R
-import diplom.project.gameconnect.model.Request
-import diplom.project.gameconnect.model.UserInfo
+import diplom.project.gameconnect.model.Teammate
 
 class DataManager(private val baseContext: Context) {
     private val appName = baseContext.resources.getString(R.string.app_name)
@@ -32,8 +30,9 @@ class DataManager(private val baseContext: Context) {
                 .addOnCompleteListener {
                     result = true
                 }
+        } catch (e: Exception) {
+            return result
         }
-        catch (e:Exception) {return result}
         return result
     }
 
@@ -56,18 +55,18 @@ class DataManager(private val baseContext: Context) {
     fun getUserKey(): String =
         preferences.getString(baseContext.getString(R.string.user_key), "") ?: ""
 
-    fun setListTeammates(list: MutableList<Request>) {
-        return preferences.edit()
+    fun setListTeammates(list: List<Teammate>) {
+        preferences.edit()
             .putString(baseContext.getString(R.string.listlistteammates), Gson().toJson(list))
             .apply()
     }
 
-    fun getListLastTeammates(): MutableList<Request> {
+    fun getListLastTeammates(): MutableList<Teammate> {
         return try {
             Gson().fromJson(
                 preferences.getString(baseContext.getString(R.string.listlistteammates), "")
-                    ?: mutableListOf<Request>().toString(),
-                object : TypeToken<MutableList<Request>>() {}.type
+                    ?: mutableListOf<Teammate>().toString(),
+                object : TypeToken<MutableList<Teammate>>() {}.type
             )
         } catch (e: Exception) {
             mutableListOf()

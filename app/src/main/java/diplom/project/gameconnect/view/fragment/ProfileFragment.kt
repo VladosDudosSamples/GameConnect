@@ -163,7 +163,7 @@ class ProfileFragment : Fragment(), GamesAdapter.OnClick {
     }
 
     private fun setUser(userInfo: UserInfo) {
-        binding.tgId.text = userInfo.telegramId
+        binding.tgId.text = "@${userInfo.telegramId}"
         binding.nickName.text = userInfo.nick
         binding.genderTxt.text =
             "${resources.getString(R.string.gender)} ${if (userInfo.gender) "Ж" else "М"}"
@@ -199,22 +199,9 @@ class ProfileFragment : Fragment(), GamesAdapter.OnClick {
     }
 
     private fun gallery() {
-//        if (ActivityCompat.checkSelfPermission(
-//                requireContext(),
-//                MANAGE_EXTERNAL_STORAGE
-//            ) != PackageManager.PERMISSION_GRANTED
-//        ) {
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-//                ActivityCompat.requestPermissions(requireActivity(), arrayOf(MANAGE_EXTERNAL_STORAGE), 11)
-//            }
-//            else{
-//                ActivityCompat.requestPermissions(requireActivity(), arrayOf(READ_EXTERNAL_STORAGE), 11)
-//            }
-//        } else {
         val gi = Intent(Intent.ACTION_PICK)
         gi.setType("image/*")
         imageResultLauncher.launch(gi)
-//        }
     }
 
 
@@ -257,9 +244,6 @@ class ProfileFragment : Fragment(), GamesAdapter.OnClick {
         ) {
             try {
                 if (it) {
-                    Glide.with(binding.imageUser)
-                        .load(imageUri)
-                        .into(binding.imageUser)
                     store.putFile(imageUri)
                     store.downloadUrl.addOnCompleteListener { uri ->
                         FirebaseFirestore.getInstance().collection("Users")
@@ -269,6 +253,9 @@ class ProfileFragment : Fragment(), GamesAdapter.OnClick {
                                 uri.result
                             )
                     }
+                    Glide.with(binding.imageUser)
+                        .load(imageUri)
+                        .into(binding.imageUser)
 
                 }
             } catch (e: Exception) {

@@ -1,24 +1,26 @@
 package diplom.project.gameconnect.view.activity
 
+import android.app.Dialog
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.firestore.FirebaseFirestore
 import diplom.project.gameconnect.R
 import diplom.project.gameconnect.app.App
 import diplom.project.gameconnect.databinding.ActivityMainBinding
-import diplom.project.gameconnect.statik.User
 import diplom.project.gameconnect.statik.User.userData
 
 
 class MainActivity : AppCompatActivity() {
 
     private val binding: ActivityMainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -36,7 +38,7 @@ class MainActivity : AppCompatActivity() {
             .get()
             .addOnCompleteListener {
                 if (it.isSuccessful) {
-                    val list =  it.result.data?.get("gamesList").toString().replace("[", "")
+                    val list = it.result.data?.get("gamesList").toString().replace("[", "")
                         .replace("]", "").split(",")
                     userData.nick = it.result.data?.get("nick").toString()
                     userData.listPlatform =
@@ -47,6 +49,7 @@ class MainActivity : AppCompatActivity() {
                     userData.rating = it.result.data?.get("rating").toString().toInt()
                     userData.gamesList = if (list[0] == "") mutableListOf() else list
                     userData.profileImage = it.result.data?.get("profileImage").toString()
+                    userData.listToAccept = it.result.data?.get("listToAccept").toString()
                 }
             }
     }

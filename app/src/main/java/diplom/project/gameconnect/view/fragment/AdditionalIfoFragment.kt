@@ -80,7 +80,8 @@ class AdditionalIfoFragment : Fragment() {
             binding.switchGender.isChecked,
             50,
             "https://",
-            listOf()
+            listOf(),
+            ""
         )
 
         store.collection("Users").document("user:${App.dm.getUserKey()}")

@@ -88,9 +88,7 @@ class AuthRegisterFragment() : Fragment() {
                         val user = auth.currentUser
                         updateUI(user)
                         App.dm.setUserKey(user!!.uid)
-                        if (App.dm.isAdditionalInfoEntered(user.uid))
-                            startActivity(Intent(requireActivity(), MainActivity::class.java))
-                        else findNavController().navigate(R.id.action_authRegisterFragment_to_additionalIfoFragment)
+                        startActivity(Intent(requireActivity(), MainActivity::class.java))
                     } else {
                         Log.w(ContentValues.TAG, "signInWithEmail:failure", task.exception)
                         makeToast(getString(R.string.some_problems_went))
@@ -146,7 +144,7 @@ class AuthRegisterFragment() : Fragment() {
         ).show()
     }
 
-    private fun checkEmail() : Boolean {
+    private fun checkEmail(): Boolean {
         when {
             !Patterns.EMAIL_ADDRESS.matcher(binding.emailEdit.text)
                 .matches() -> makeToast(getString(R.string.enter_correct_email))
@@ -177,6 +175,7 @@ class AuthRegisterFragment() : Fragment() {
                 }
         }
     }
+
     private fun checkInputPass(): Boolean {
         when {
             binding.passwordEdit.text.isNullOrEmpty() -> makeToast(getString(R.string.enter_the_password))

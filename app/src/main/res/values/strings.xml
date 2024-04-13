@@ -41,7 +41,7 @@
     <string name="teammates">Тиммейты</string>
     <string name="profile">Профиль</string>
     <string name="request_list">Список запросов</string>
-    <string name="your_timmates">Ваши тиммейты</string>
+    <string name="your_timmates">Список заявок</string>
     <string name="need_users">Требуется людей: </string>
     <string name="gender">Пол: </string>
     <string name="comment">Комментарий: </string>
@@ -70,7 +70,7 @@
     <string name="nintendoswitch">NintendoSwitch</string>
     <string name="deleteFilters">Без фильтров</string>
     <string name="delete">Удалить</string>
-    <string name="lets_join">Присоединяйтесь!</string>
+    <string name="lets_join">Вас ждут!</string>
     <string name="open_profile">Открыть профиль</string>
     <string name="listlistteammates">listListTeammates</string>
     <string name="poradok">Порядочность:</string>
@@ -80,4 +80,8 @@
     <string name="userpick">userPick</string>
     <string name="make_app_use_camera">Разрешите приложению использовать камеру</string>
     <string name="make_app_use_gallery">Разрешите приложению использовать галлерею</string>
+    <string name="accept">Принять</string>
+    <string name="rejectBtn">Отклонить</string>
+    <string name="new_request">Нерешённый запрос!</string>
+    <string name="waitinglist">WaitingList</string>
 </resources>

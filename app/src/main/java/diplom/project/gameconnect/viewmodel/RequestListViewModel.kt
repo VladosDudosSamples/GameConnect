@@ -6,11 +6,12 @@ import android.view.MenuItem
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import diplom.project.gameconnect.R
 import diplom.project.gameconnect.model.FilterType
 import diplom.project.gameconnect.model.Request
-import diplom.project.gameconnect.model.SortType
 
 class RequestListViewModel : ViewModel() {
     val requestList = MutableLiveData<MutableList<Request>>()
@@ -18,6 +19,7 @@ class RequestListViewModel : ViewModel() {
     private var resultList = mutableListOf<Request>()
     private var requestsCount = 0
     private var currentFilter: FilterType = FilterType.NO_FILTERS
+    private lateinit var listener: ListenerRegistration
 
     fun getRequestList(store: FirebaseFirestore) {
         resultList.clear()
@@ -126,5 +128,21 @@ class RequestListViewModel : ViewModel() {
 
             else -> requestList.value!!
         }
+    }
+    fun eventListening(store: FirebaseFirestore){
+        listener = store.collection("Requests").document("RequestCount")
+            .addSnapshotListener { value, error ->
+                if (error != null){
+                    Log.d(error.code.toString(), error.message.toString())
+
+                }
+                else if (value!!.data?.get("count").toString().toInt() != requestsCount && requestsCount != 0){
+                    getRequestList(store)
+                }
+
+            }
+    }
+    fun stopListening(){
+        listener.remove()
     }
 }

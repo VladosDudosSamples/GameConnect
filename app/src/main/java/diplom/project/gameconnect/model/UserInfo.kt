@@ -7,5 +7,6 @@ data class UserInfo(
     var gender: Boolean,
     var rating: Int,
     var profileImage: String,
-    var gamesList: List<String>
+    var gamesList: List<String>,
+    var listToAccept: String
 )

@@ -2,10 +2,7 @@ package diplom.project.gameconnect.view.fragment
 
 import android.annotation.SuppressLint
 import android.app.Dialog
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
-import android.content.Context.CLIPBOARD_SERVICE
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -17,9 +14,9 @@ import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.gson.Gson
 import diplom.project.gameconnect.R
 import diplom.project.gameconnect.app.App
 import diplom.project.gameconnect.databinding.DialogChangeNeedUsersBinding
@@ -28,10 +25,11 @@ import diplom.project.gameconnect.databinding.DialogRequestBinding
 import diplom.project.gameconnect.databinding.FragmentRequestBinding
 import diplom.project.gameconnect.model.Request
 import diplom.project.gameconnect.model.SortType
+import diplom.project.gameconnect.model.Teammate
+import diplom.project.gameconnect.model.TypeTeammate
 import diplom.project.gameconnect.model.UserInfo
 import diplom.project.gameconnect.statik.SelectedPlatforms.listPlatforms
 import diplom.project.gameconnect.statik.SelectedPlatforms.selectedPlatform
-import diplom.project.gameconnect.statik.User
 import diplom.project.gameconnect.statik.User.userData
 import diplom.project.gameconnect.view.adapter.PlatformsAdapter
 import diplom.project.gameconnect.view.adapter.RequestAdapter
@@ -46,8 +44,7 @@ class RequestFragment : Fragment(), RequestAdapter.OnClickListener {
         if (userData.nick == data.userNick) {
             showChangeCountDialog(data.id, data.needUsers.toInt())
         } else {
-            addUserToList(data)
-            openTgIdDialog(data.telegramId)
+            addUserToListTeammates(userData, data)
         }
     }
 
@@ -60,7 +57,6 @@ class RequestFragment : Fragment(), RequestAdapter.OnClickListener {
     private var store = FirebaseFirestore.getInstance()
     private val format: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
     private var currentSortType = SortType.DATE
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -75,6 +71,8 @@ class RequestFragment : Fragment(), RequestAdapter.OnClickListener {
         onClick()
         requestListViewModel.getRequestList(store)
         setObservers()
+
+        requestListViewModel.eventListening(store)
     }
 
     private fun onClick() {
@@ -123,10 +121,12 @@ class RequestFragment : Fragment(), RequestAdapter.OnClickListener {
                     userData.telegramId,
                     LocalDateTime.now().format(format),
                     selectedPlatform,
-                    "https://",
+                    userData.profileImage,
                     App.dm.getUserKey()
                 )
             )
+
+        println(userData.profileImage)
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -201,7 +201,7 @@ class RequestFragment : Fragment(), RequestAdapter.OnClickListener {
             SortType.OLD_DATE -> requestListViewModel.requestList.value!!.sortBy { it.date }
             SortType.ALPHABET -> requestListViewModel.requestList.value!!.sortBy { it.gameName }
             SortType.ANTI_ALPHABET -> requestListViewModel.requestList.value!!.sortByDescending { it.gameName }
-            else -> requestListViewModel.requestList.value!!.sortByDescending { it.userRating }
+            else -> requestListViewModel.requestList.value!!.sortBy { it.userRating }
         }
     }
 
@@ -309,34 +309,30 @@ class RequestFragment : Fragment(), RequestAdapter.OnClickListener {
         requestListViewModel.getRequestList(store)
     }
 
-    private fun openTgIdDialog(tgId: String) {
-        val dialogBinding: DialogGiveInfoBinding by lazy {
-            DialogGiveInfoBinding.inflate(
-                layoutInflater
-            )
-        }
-        val dialog = Dialog(requireContext()).apply {
-            setCancelable(true)
-            setContentView(dialogBinding.root)
-            dialogBinding.tgId.text = "@$tgId"
-            dialogBinding.tgId.setOnClickListener {
-                val clipboard: ClipboardManager =
-                    requireContext().getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                val clip = ClipData.newPlainText("telegramId", "@$tgId")
-                clipboard.setPrimaryClip(clip)
-                makeToast("telegram id скопирован в буфер обмена")
-                this.cancel()
-            }
-            window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        }
-        dialog.show()
-    }
-    private fun addUserToList(request: Request){
+    private fun addUserToListTeammates(teammate: UserInfo, request: Request) {
         val list = App.dm.getListLastTeammates()
+
         list.removeAll {
-            it.telegramId == request.telegramId
+            it.telegramId == request.telegramId||
+            it.telegramId == teammate.telegramId
         }
-        list.add(request)
-        App.dm.setListTeammates(list)
+
+        list.add(
+            Teammate(
+                teammate.nick,
+                request.gameName,
+                teammate.telegramId,
+                teammate.profileImage,
+                App.dm.getUserKey(),
+                TypeTeammate.WAITING
+            )
+        )
+        store.collection("Users").document("user:${request.userId}")
+            .update("listToAccept", Gson().toJson(list))
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        requestListViewModel.stopListening()
     }
 }

@@ -9,26 +9,14 @@
 
     <TextView
         android:id="@+id/joinTxt"
-        android:layout_width="256dp"
+        android:layout_width="232dp"
         android:layout_height="wrap_content"
         android:paddingHorizontal="4dp"
-        android:text="@string/lets_join"
+        android:text="@string/new_request"
         android:textAlignment="center"
         android:textColor="@color/white"
-        android:textSize="28sp"
+        android:textSize="32sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tgId"
-        android:layout_width="256dp"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="4dp"
-        android:textAlignment="center"
-        android:textColor="@color/white"
-        android:textSize="22sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/joinTxt" />
 </androidx.constraintlayout.widget.ConstraintLayout>

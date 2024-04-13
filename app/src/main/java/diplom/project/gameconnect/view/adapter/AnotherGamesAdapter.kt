@@ -10,13 +10,11 @@ import diplom.project.gameconnect.R
 import diplom.project.gameconnect.databinding.GameLayoutBinding
 import diplom.project.gameconnect.databinding.PlatformLayoutBinding
 
-class GamesAdapter(
+class AnotherGamesAdapter(
     private var list: List<String>,
-    private val context: Context,
-    private val onClickListener: OnClick,
-    private val isDeleting: Boolean
+    private val context: Context
 ) :
-    RecyclerView.Adapter<GamesAdapter.GamesVH>() {
+    RecyclerView.Adapter<AnotherGamesAdapter.GamesVH>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GamesVH {
         return GamesVH(
             GameLayoutBinding.inflate(
@@ -29,18 +27,9 @@ class GamesAdapter(
 
     override fun onBindViewHolder(holder: GamesVH, position: Int) {
         holder.binding.textView2.text = list[position]
-        holder.binding.reduceBtn.visibility = if (isDeleting) View.VISIBLE else View.GONE
-        holder.binding.reduceBtn.setOnClickListener {
-            onClickListener.click(holder.binding.textView2)
-        }
     }
 
     override fun getItemCount(): Int = list.size
-
-    interface OnClick {
-        fun click(textView: TextView)
-    }
-
     class GamesVH(val binding: GameLayoutBinding) :
         RecyclerView.ViewHolder(binding.root)
 }
